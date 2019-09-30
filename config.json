@@ -1,0 +1,1 @@
+{"mysql":{"host":"192.168.35.15","user":"root","passwd":"careersnow@123","database":"linkcheckerDb"},"mongodb":{"host":"localhost","username":"myUserAdmin","password":"abc123","authSource":"admin"}}
