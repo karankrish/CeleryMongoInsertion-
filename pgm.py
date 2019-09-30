@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_celery import make_celery
 from pymongo import MongoClient
 import json
+from flask_cors import CORS
 
 with open('config.json') as f:
     config = json.load(f)
@@ -9,21 +10,16 @@ with open('config.json') as f:
 app = Flask(__name__)
 app.config['CELERY_BROKER_URL'] = 'amqp://user:bitnami@localhost:5672'
 app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
+CORS(app)
 celery = make_celery(app)
 
-@app.route('/', methods=['PUT'])
+@app.route('/', methods=['POST'])
 def process():
-	function.deplay(request.json)
-	return "ok"
-
-@celery.task(name="eg.function")
-def function(j):
-    data= {
-            'url':request.json['url'],
-            'error':request.json['error'],
-            'remedy':request.json['remedy'],
-            'remark':request.json['remark']
-            }
+    data = request.json
+    function.delay(data)
+    return "ok"
+@celery.task(name="pgm.function")
+def function(data):
     client =MongoClient(config['mongodb']['host'],
                                        username=config['mongodb']['username'],
                                        password=config['mongodb']['password'],
@@ -34,4 +30,4 @@ def function(j):
     return "completed"
 
 if __name__ == "__main__":
-    app.run(debug=True, host='localhost')
+    app.run(debug=True, host='192.168.100.20')
