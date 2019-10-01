@@ -1,0 +1,14 @@
+FROM ubuntu:18.04
+#MAINTANER Your Name "mail2karankrishnan@gmail.com"
+RUN apt-get update  && \
+        apt-get install -y python3-pip && \
+        mkdir log && \
+        touch log/pgmlog.log && \
+        chmod 777 log/pgmlog.log
+COPY ./requirements.txt /opt/pgm/requirements.txt
+WORKDIR /opt/pgm
+RUN pip3 install -r requirements.txt
+COPY . /opt/pgm
+EXPOSE 5672
+ENTRYPOINT ["/bin/bash"]
+CMD ["start.sh"]
