@@ -9,8 +9,8 @@ from logging.handlers import RotatingFileHandler
 
 logging.basicConfig(filename='log/api.log', level=logging.ERROR, 
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
-logger=logging.getLogger("dnslog.log")
-handler = RotatingFileHandler("log/dnslog.log", maxBytes=2000, backupCount=25) 
+logger=logging.getLogger("api.log")
+handler = RotatingFileHandler("log/api.log", maxBytes=2000, backupCount=25) 
 if not logger: 
     logger.addHandler(handler)
     
