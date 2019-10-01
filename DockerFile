@@ -9,6 +9,6 @@ COPY ./requirements.txt /opt/pgm/requirements.txt
 WORKDIR /opt/pgm
 RUN pip3 install -r requirements.txt
 COPY . /opt/pgm
-EXPOSE 5672
+EXPOSE 5672 27017 15672 25672 4369
 ENTRYPOINT ["/bin/bash"]
 CMD ["start.sh"]

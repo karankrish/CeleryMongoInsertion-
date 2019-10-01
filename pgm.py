@@ -20,7 +20,7 @@ with open('config.json') as f:
     config = json.load(f)
   
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'amqp://user:bitnami@localhost:5672'
+app.config['CELERY_BROKER_URL'] = 'amqp://user:bitnami@0.0.0.0:5672'
 app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
 CORS(app)
 celery = make_celery(app)
@@ -30,21 +30,13 @@ def process():
     try:
         data = request.json
         function.delay(data)
-        return "ok"
     except Exception as e:
         logger.error("------flask api---------" +str(e))
-        return "failed"
+    return "ok"
 @celery.task(name="pgm.function")
 def function(data):
     try:
-        '''
-    client =MongoClient(config['mongodb']['host'],
-                                       username=config['mongodb']['username'],
-                                       password=config['mongodb']['password'],
-                                       authSource=config['mongodb']['authSource'])
-        '''
-  
-        client =MongoClient(config['mongodb']['host'])
+        client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
         db = client.DomainMonitor
         collection = db.api
         collection.insert(data)

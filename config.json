@@ -1,1 +1,1 @@
-{"mysql":{"host":"192.168.35.15","user":"root","passwd":"careersnow@123","database":"linkcheckerDb"},"mongodb":{"host":"10.128.0.6","username":"myUserAdmin","password":"abc123","authSource":"admin"}}
+{"mysql":{"host":"192.168.35.15","user":"root","passwd":"careersnow@123","database":"linkcheckerDb"},"mongodb":{"host":" 	10.128.0.6","username":"admin","password":"careersnow@123","authSource":"admin"}}
