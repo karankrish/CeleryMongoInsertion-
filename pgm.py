@@ -20,14 +20,17 @@ def process():
     return "ok"
 @celery.task(name="pgm.function")
 def function(data):
+  '''
     client =MongoClient(config['mongodb']['host'],
                                        username=config['mongodb']['username'],
                                        password=config['mongodb']['password'],
                                        authSource=config['mongodb']['authSource'])
+  '''
+    client =MongoClient(config['mongodb']['host'])
     db = client.DomainMonitor
     collection = db.api
     collection.insert(data)
     return "completed"
 
 if __name__ == "__main__":
-    app.run(debug=True, host='192.168.100.20')
+    app.run(debug=True, host='0.0.0.0')
