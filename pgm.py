@@ -3,17 +3,7 @@ from flask_celery import make_celery
 from pymongo import MongoClient
 import json
 from flask_cors import CORS
-import logging
-from logging.handlers import RotatingFileHandler
 
-
-logging.basicConfig(filename='log/api.log', level=logging.ERROR, 
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
-logger=logging.getLogger("api.log")
-handler = RotatingFileHandler("log/api.log", maxBytes=2000, backupCount=25) 
-if not logger: 
-    logger.addHandler(handler)
-    
     
 
 with open('config.json') as f:
@@ -31,7 +21,7 @@ def process():
         data = request.json
         function.delay(data)
     except Exception as e:
-        logger.error("------flask api---------" +str(e))
+        print("------flask api---------" +str(e))
     return "ok"
 @celery.task(name="pgm.function")
 def function(data):
@@ -39,9 +29,10 @@ def function(data):
         client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
         db = client.DomainMonitor
         collection = db.api
-        collection.insert(data)
+        collection.insert_one(data)
+        client.close()
     except Exception as e:
-        logger.error("------DB---------" +str(e))
+        print("------DB---------" +str(e))
     return "completed"
 
 if __name__ == "__main__":
