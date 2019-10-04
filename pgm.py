@@ -23,6 +23,30 @@ def process():
     except Exception as e:
         print("------flask api---------" +str(e))
     return "ok"
+
+@app.route('/get', methods=['POST'])
+def replace():
+    try:
+        data = request.json
+        data = getData(data)
+    except Exception as e:
+        print("------flask api---------" +str(e))
+        data = [{}]
+    return str(json.dumps(data))
+
+
+def getData(d):
+    try:
+        client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
+        db = client.DomainMonitor
+        collection = db.api
+        data = list(collection.find(d,{'_id':0,'_class':0}))
+        client.close()
+    except Exception as e:
+        print("------getData---------" +str(e))
+    return data
+
+
 @celery.task(name="pgm.function")
 def function(data):
     try:
