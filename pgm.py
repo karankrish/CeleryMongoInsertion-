@@ -4,32 +4,59 @@ from pymongo import MongoClient
 import json
 from flask_cors import CORS
 
+    
+
 with open('config.json') as f:
     config = json.load(f)
   
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'amqp://user:bitnami@localhost:5672'
+app.config['CELERY_BROKER_URL'] = 'amqp://user:bitnami@0.0.0.0:5672'
 app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
 CORS(app)
 celery = make_celery(app)
 
 @app.route('/', methods=['POST'])
 def process():
-    data = request.json
-    function.delay(data)
+    try:
+        data = request.json
+        function.delay(data)
+    except Exception as e:
+        print("------flask api---------" +str(e))
     return "ok"
+
+@app.route('/get', methods=['POST'])
+def replace():
+    try:
+        data = request.json
+        data = getData(data)
+    except Exception as e:
+        print("------flask api---------" +str(e))
+        data = [{}]
+    return str(json.dumps(data))
+
+
+def getData(d):
+    try:
+        client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
+        db = client.DomainMonitor
+        collection = db.api
+        data = list(collection.find(d,{'_id':0,'_class':0}))
+        client.close()
+    except Exception as e:
+        print("------getData---------" +str(e))
+    return data
+
+
 @celery.task(name="pgm.function")
 def function(data):
-  '''
-    client =MongoClient(config['mongodb']['host'],
-                                       username=config['mongodb']['username'],
-                                       password=config['mongodb']['password'],
-                                       authSource=config['mongodb']['authSource'])
-  '''
-    client =MongoClient(config['mongodb']['host'])
-    db = client.DomainMonitor
-    collection = db.api
-    collection.insert(data)
+    try:
+        client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
+        db = client.DomainMonitor
+        collection = db.api
+        collection.insert_one(data)
+        client.close()
+    except Exception as e:
+        print("------DB---------" +str(e))
     return "completed"
 
 if __name__ == "__main__":
