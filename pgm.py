@@ -3,7 +3,7 @@ from flask_celery import make_celery
 from pymongo import MongoClient
 import json
 from flask_cors import CORS
-from send import SendUrl
+from send import SendUrl , mysqlread
 from bson.objectid import ObjectId
 
 with open('config.json') as f:
@@ -17,13 +17,25 @@ celery = make_celery(app)
 
 
 @app.route('/send', methods=['POST'])
-def send():
+def urlsend():
     try:
         data = request.json
-        SendUrl(data)
+        send.delay(data)
     except Exception as e:
         print("------rabbitmq api---------" +str(e))
     return "successfully send"
+
+@celery.task(name="pgm.send")
+def send(data):
+    try:
+        url = set(mysqlread())
+        if data['url'] in url:
+            pass
+        else:
+            SendUrl(data)
+    except Exception as e:
+        print("------send task---------" +str(e))
+    return "completed"
 
 @app.route('/', methods=['POST'])
 def process():
