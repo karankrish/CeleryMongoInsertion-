@@ -2,7 +2,7 @@ import pika
 import mysql.connector
 
 def SendUrl(data):
-    parameters = pika.URLParameters('amqp://user:bitnami@localhost:5672/')
+    parameters = pika.URLParameters('amqp://user:bitnami@0.0.0.0:5672/')
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
     channel.queue_declare(queue='url')
