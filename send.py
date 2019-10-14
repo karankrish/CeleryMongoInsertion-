@@ -5,8 +5,8 @@ def SendUrl(data):
     parameters = pika.URLParameters('amqp://user:bitnami@0.0.0.0:5672/')
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
-    channel.queue_declare(queue='url')
-    channel.basic_publish(exchange='', routing_key='url', body=str(data))
+    channel.queue_declare(queue='report-generator-queue')
+    channel.basic_publish(exchange='', routing_key='report-generator-queue', body=str(data))
     connection.close()
     return 
 
