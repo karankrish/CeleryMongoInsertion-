@@ -27,3 +27,20 @@ def mysqlread():
     for i in myresult:
         a.append(i[0])
     return a
+
+def mysqlinsert(parseUrl):
+    mydb = mysql.connector.connect(
+      host="35.184.228.174",
+      user="root",
+      passwd="admin",
+      database="wcag"
+    )
+    
+    mycursor = mydb.cursor()
+    
+    sql = "INSERT INTO parseurltable (parseUrl, parseurlstatus) VALUES (%s, %s)"
+    val = (parseUrl, "running")
+    mycursor.execute(sql, val)
+    
+    mydb.commit()
+    return 

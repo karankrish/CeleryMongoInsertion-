@@ -3,7 +3,7 @@ from flask_celery import make_celery
 from pymongo import MongoClient
 import json
 from flask_cors import CORS
-from send import SendUrl , mysqlread
+from send import SendUrl , mysqlread , mysqlinsert
 from bson.objectid import ObjectId
 
 with open('config.json') as f:
@@ -33,6 +33,7 @@ def send(data):
             pass
         else:
             SendUrl(data)
+            mysqlinsert(data['url'])
     except Exception as e:
         print("------send task---------" +str(e))
     return "completed"
