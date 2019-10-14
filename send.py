@@ -6,7 +6,7 @@ def SendUrl(data):
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
     channel.queue_declare(queue='report-generator-queue')
-    channel.basic_publish(exchange='', routing_key='report-generator-queue', body=str(data))
+    channel.basic_publish(exchange='', routing_key='report-generator-queue' ,body=str(data))
     connection.close()
     return 
 
