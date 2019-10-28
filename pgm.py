@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_celery import make_celery
-from pymongo import MongoClient
+from pymongo import MongoClient , DESCENDING , ASCENDING
 import json
 from flask_cors import CORS
 from send import SendUrl , mysqlread , mysqlinsert
@@ -66,7 +66,7 @@ def getData(d):
         client =MongoClient(config['mongodb']['host'],username=config['mongodb']['username'],password=config['mongodb']['password'],authSource=config['mongodb']['authSource'])
         db = client.DomainMonitor
         collection = db.api
-        data = list(collection.find(d,{'_class':0}))
+        data = list(collection.find(d,{'_class':0}).sort('_id',DESCENDING))
         client.close()
     except Exception as e:
         print("------getData---------" +str(e))
@@ -88,7 +88,9 @@ def updated(data):
         db = client.DomainMonitor
         collection = db.api
         ID = data.pop('_id')
-        collection.update({'_id': ObjectId(ID)},{'$set':data}, upsert=True, multi=False)
+        collection.delete_one({'_id': ObjectId(ID)})
+        #collection.update({'_id': ObjectId(ID)},{'$set':data}, upsert=True, multi=False)
+        collection.insert_one(data)
         client.close()
     except Exception as e:
         print("------DB---------" +str(e))
