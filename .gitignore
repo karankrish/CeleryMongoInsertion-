@@ -2,3 +2,7 @@
 __pycache__/
 
 *.yml
+
+nohup\.out
+
+*.logs
